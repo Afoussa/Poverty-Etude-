@@ -1,0 +1,116 @@
+---
+title: "Etude poverty"
+author: "Afaf Oussa"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  keep_tex: true
+---
+
+```{r}
+# importation des données 
+library(readxl)
+ base_pauv_priv44 <- read_excel("C:/Users/AFAF OUSSA/Desktop/etude pauvreté/base_pauv_priv44.xlsx")
+ View(base_pauv_priv44)
+ # statistiques descriptives 
+ summary(base_pauv_priv44)
+```
+
+```{r}
+# Sélection de toutes les variables sauf "Province"
+ base_pauv_priv44_sans_Province <- base_pauv_priv44[, -which(names(base_pauv_priv44) == "Province")]
+# Matrice de correlation 
+cor(base_pauv_priv44_sans_Province)
+matrice_corr <- cor(base_pauv_priv44_sans_Province)
+# Arrondir chaque élément de la matrice de corrélation à deux décimales
+matrice_corr_arrondie <- round(matrice_corr, 2)
+#install.packages("tidyverse") 
+# Conversion de la matrice en format tabulaire
+library (tidyverse)
+tableau_corr <- as.data.frame(as.table(matrice_corr_arrondie))
+ # statistiques descriptives sous format tableau 
+install.packages("psych")
+library(psych)
+descriptive_stats <- describe(base_pauv_priv44_sans_Province)
+print(descriptive_stats, short = FALSE)
+
+```
+```{r}
+ # install.packages("rmarkdown")
+library(rmarkdown)
+render("C:\C:\Sorties R/etude poverty R.Rmd")
+```
+```{r}
+ # install.packages("FactoMineR")
+library(FactoMineR)
+result <- PCA(base_pauv_priv44_sans_Province, graph = TRUE)
+# Visualiser le nuage des individus
+plot.PCA(result, choix = "ind")
+
+# Visualiser les variables dans les composantes principales
+install.packages("factoextra")
+library(factoextra)
+fviz_contrib(result, choice = "var", axes = c(1, 2), col = "steelblue")
+
+```
+```{r}
+library(FactoMineR)
+# Afficher le pourcentage de variance expliquée par chaque composante principale
+print(result$eig$values / sum(result$eig$values) * 100)
+
+# Afficher le pourcentage cumulatif de variance expliquée
+print(cumsum(result$eig$values / sum(result$eig$values) * 100))
+`
+```
+
+
+
+```{r}
+library(factoextra)
+
+# Example PCA calculation
+pca <- prcomp(base_pauv_priv44_sans_Province)
+
+# Define a custom palette of colors from blue to red
+custom_palette <- colorRampPalette(c("blue", "red"))(15)
+
+# Plot the PCA graph with circles colored by cos^2 using the custom color palette
+p <- fviz_pca_var(pca, col.var = "cos2", repel = TRUE) +
+  scale_fill_gradientn(colors = custom_palette)
+
+# Afficher le graphique
+print(p)
+```
+
+
+```{r}
+library(FactoMineR)
+
+# Calcul de l'analyse en composantes principales (PCA)
+pca <- PCA(base_pauv_priv44_sans_Province, scale.unit = TRUE)
+
+# Calcul des cos^2
+cos2 <- get_pca_var(pca)$cos2
+# Affichage des cos^2
+print(cos2)
+```
+
+```{r}
+library(factoextra)
+
+# Example PCA calculation
+pca <- prcomp(base_pauv_priv44_sans_Province)
+
+# Define a custom palette of colors from blue to red
+custom_palette <- colorRampPalette(c("blue", "red"))(ncol(base_pauv_priv44_sans_Province))
+
+# Plot the PCA graph with circles colored by cos^2 using the custom color palette
+p <- fviz_pca_var(pca, col.var = custom_palette)
+
+# Afficher le graphique
+print(p)
+```
+```
+
+
+
